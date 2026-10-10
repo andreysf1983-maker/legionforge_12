@@ -1,0 +1,222 @@
+
+ =========================================================
+  LEGIONFORGE 7.3.5 - установка сервера
+ =========================================================
+
+ [*] Проверка пройдена: права администратора получены.
+
+ [*] Проверка уже извлечённых игровых данных в server\data...
+  == LEGIONFORGE: проверка DB2 (dbc) на соответствие ядру ==
+  Каталог: D:\legionforge\server\data\dbc\enUS
+  Ожидается таблиц ядром: 242; константы: BATTLE_PET_SPECIES_MAX_ID=2164, MAX_DIFFICULTY=35, TaxiMaskSize=258
+  Проверено файлов: 242; отсутствует: 0
+  [!] Данные выходят за пределы констант ядра (ASSERT при запуске):
+      BattlePetSpecies.db2: MaxId=5003 -> строк 5004, а BATTLE_PET_SPECIES_MAX_ID=2164. worldserver упадёт на ASSERT (DB2Stores.cpp:745).
+      Difficulty.db2: MaxId=147 -> строк 148, а MAX_DIFFICULTY=35. worldserver упадёт на ASSERT (DB2Stores.cpp:827).
+      TaxiNodes.db2: строк 2283, нужно TaxiMaskSize>=286, а в ядре 258. worldserver упадёт на ASSERT (DB2Stores.cpp:1096).
+
+  Что делать:
+    1. Папка server\data скопирована откуда-то целиком? Тогда dbc (и, скорее всего, maps/vmaps)
+       взяты из другого клиента. Извлеките данные заново из своего клиента 7.3.5 build 26124:
+       extract_maps.bat - он сам напишет dbc из CASC клиента.
+    2. Проверить билд клиента: в логе клиента (Logs/FrameXML.log) или по версии Wow-64.exe.
+       Сервер LEGIONFORGE работает только с 7.3.5 (build 26124).
+    3. Если dbc намеренно расширен (например, добавлены питомцы из новых дополнений),
+       потребуется поднять константы ядра и пересобрать его - см. docs\CRASH-DIAGNOSIS.md,
+       раздел "BattlePetSpecies 5004". Без пересборки сервер запускаться не будет.
+[!] DB2 не соответствуют ядру: с такими данными worldserver упадёт при запуске.
+    Игровые данные не пригодны - см. сообщения выше.
+
+
+
+
+
+
+
+
+ =========================================================
+  LEGIONFORGE 7.3.5 - автоматическая компиляция сервера
+ =========================================================
+
+  Что будет сделано:
+    1. Загрузка инструментов в tools\  - около 3 ГБ, один раз
+    2. Установка Visual Studio 2022 Build Tools, если компилятора нет
+    3. Компиляция ядра - обычно 30-90 минут, зависит от ПК
+    4. Копирование готовых .exe и .dll в папку server\
+
+  Нужно: интернет, ~30 ГБ свободного места, 8+ ГБ ОЗУ.
+  Повторный запуск продолжит с места остановки.
+
+Для продолжения нажмите любую клавишу . . .
+
+  LEGIONFORGE 7.3.5 - автоматическая компиляция сервера
+  Журнал: D:\legionforge\build_log.txt
+
+  [*] Свободно на диске: 665 ГБ; ОЗУ: 8 ГБ; ядер ЦП: 4
+
+  [*] Шаг 1/4. Подготовка портативных инструментов в tools\
+  [OK] Найден установленный 7-Zip: C:\Program Files\7-Zip\7z.exe
+  [OK] CMake уже подготовлен: tools\cmake
+  [OK] Найден компилятор: Visual Studio Build Tools 2022 17.14.37614.0
+  [OK] Boost 1.86.0 уже подготовлен: tools\boost_1_86_0
+  [OK] OpenSSL уже подготовлен: tools\openssl
+  [OK] MySQL для сборки: D:\legionforge\tools\mysql\server
+
+  [*] Шаг 2/4. Генерация проекта CMake (1-3 минуты)...
+-- Selecting Windows SDK version 10.0.26100.0 to target Windows 10.0.19045.
+-- The C compiler identification is MSVC 19.44.35228.0
+-- The CXX compiler identification is MSVC 19.44.35228.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: C:/Program Files (x86)/Microsoft Visual Studio/2022/BuildTools/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/cl.exe - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: C:/Program Files (x86)/Microsoft Visual Studio/2022/BuildTools/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/cl.exe - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Detected 64-bit platform
+-- MSVC: 64-bit platform, enforced -D_WIN64 parameter
+-- MSVC: Enabled increased number of sections in object files
+-- MSVC: Disabled NON-SECURE warnings
+-- MSVC: Enabled legacy STL helpers (_HAS_AUTO_PTR_ETC) + NOMINMAX
+-- MSVC: C++ standard pinned to C++14
+-- MSVC: Disabled POSIX warnings
+-- MSVC: Disabled generic compiletime warnings
+-- cotire 1.7.10 loaded.
+-- Found MySQL library: D:/legionforge/tools/mysql/server/lib/libmysql.lib
+-- Found MySQL headers: D:/legionforge/tools/mysql/server/include
+* LEGIONFORGE revision   : rev.1 2026-10-10 13:56:57 (Legion 7.3.5.26124 branch)
+* Install core to        : C:/Program Files/LEGIONFORGE
+* Build world/auth       : Yes (default)
+* Build with scripts     : Yes (static)
+* Build map/vmap tools   : Yes (default)
+* Build core w/PCH       : Yes (default)
+* Build scripts w/PCH    : Yes (default)
+* Show compile-warnings  : No  (default)
+* Use coreside debug     : No  (default)
+* Show source tree       : Yes (hierarchical)
+* Use GIT revision hash  : No
+ *** WITHOUT_GIT - WARNING!
+ *** By choosing the WITHOUT_GIT option you have waived all rights for support,
+ *** and accept that or all requests for support or assistance sent to the core
+ *** developers will be rejected. This due to that we will be unable to detect
+ *** what revision of the codebase you are using in a proper way.
+ *** We remind you that you need to use the repository codebase and a supported
+ *** version of git for the revision-hash to work, and be allowede to ask for
+ *** support if needed.
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Failed
+-- Looking for pthread_create in pthreads
+-- Looking for pthread_create in pthreads - not found
+-- Looking for pthread_create in pthread
+-- Looking for pthread_create in pthread - not found
+-- Found Threads: TRUE
+-- Performing Test STD_HAS_WORKING_WREGEX
+-- Performing Test STD_HAS_WORKING_WREGEX - Success
+Boost 1.66 found.
+Found Boost components:
+   system;filesystem;thread;program_options;iostreams
+-- Performing Test boost_filesystem_copy_links_without_NO_SCOPED_ENUM
+-- Performing Test boost_filesystem_copy_links_without_NO_SCOPED_ENUM - Success
+-- Looking for open
+-- Looking for open - found
+-- Found OpenSSL library: optimized;D:/legionforge/tools/openssl/lib/VC/x64/MD/libssl.lib;optimized;D:/legionforge/tools/openssl/lib/VC/x64/MD/libcrypto.lib;debug;D:/legionforge/tools/openssl/lib/VC/x64/MDd/libssl.lib;debug;D:/legionforge/tools/openssl/lib/VC/x64/MDd/libcrypto.lib
+-- Found OpenSSL headers: D:/legionforge/tools/openssl/include
+-- OpenSSL manually configured from: D:/legionforge/tools/openssl
+-- CXX target common cotired without unity build.
+-- CXX target database cotired without unity build.
+-- CXX target proto cotired without unity build.
+-- CXX target shared cotired without unity build.
+-- CXX RC target bnetserver cotired without unity build.
+-- CXX target game cotired without unity build.
+* Script configuration (static):
+    |
+    +- worldserver
+    |   +- BrokenIsles
+    |   +- Commands
+    |   +- Custom
+    |   +- DarkmoonIsland
+    |   +- Draenor
+    |   +- EasternKingdoms
+    |   +- Events
+    |   +- Kalimdor
+    |   +- Maelstrom
+    |   +- Northrend
+    |   +- OutdoorPvP
+    |   +- Outland
+    |   +- Pandaria
+    |   +- Pet
+    |   +- PlayerBot
+    |   +- Spells
+    |   +- World
+    |
+-- CXX target scripts cotired without unity build.
+-- CXX RC target worldserver cotired without unity build.
+-- Configuring done (41.4s)
+-- Generating done (3.2s)
+CMake Warning:
+  Manually-specified variables were not used by the project:
+    Boost_NO_SYSTEM_PATHS
+-- Build files have been written to: D:/legionforge/build
+  [OK] Проект сгенерирован.
+
+  [*] Шаг 3/4. Компиляция (параллельных проектов: 2, PCH: да). Обычно 30-90 минут...
+  [готово] zlib.lib
+  [готово] fmt.lib
+  [готово] gsoap.lib
+  [готово] bzip2.lib
+  [готово] protobuf.lib
+  [готово] Recast.lib
+  [готово] Detour.lib
+  [готово] duktape.lib
+  [готово] casc.lib
+  [готово] g3dlib.lib
+  [готово] common.lib
+  ... идёт компиляция: 00:03:18
+  [готово] connection_patcher.exe
+  [готово] vmap4assembler.exe
+  [готово] extractor_common.lib
+  [готово] database.lib
+  [готово] mapextractor.exe
+  [готово] vmap4extractor.exe
+  [готово] mmaps_generator.exe
+  [готово] proto.lib
+  [готово] shared.lib
+  D:\legionforge\core\src\server\game\Entities\Player\Player.h(2050,21): error C2535: bool Player::IsCustomRace(uint8): функция-член уже определена или объявлена [D:\legionforge\build\src\server\scripts\scripts.vcxproj]
+  D:\legionforge\core\src\server\game\Entities\Player\Player.h(2051,22): error C2535: uint8 Player::GetCustomRaceBase(uint8): функция-член уже определена или объявлена [D:\legionforge\build\src\server\scripts\scripts.vcxproj]
+  D:\legionforge\core\src\server\game\Entities\Player\Player.h(2052,23): error C2535: uint32 Player::GetCustomRaceTeam(uint8): функция-член уже определена или объявлена [D:\legionforge\build\src\server\scripts\scripts.vcxproj]
+  D:\legionforge\core\src\server\game\Entities\Player\Player.h(2050,21): error C2535: bool Player::IsCustomRace(uint8): функция-член уже определена или объявлена [D:\legionforge\build\src\server\game\game.vcxproj]
+  D:\legionforge\core\src\server\game\Entities\Player\Player.h(2051,22): error C2535: uint8 Player::GetCustomRaceBase(uint8): функция-член уже определена или объявлена [D:\legionforge\build\src\server\game\game.vcxproj]
+  D:\legionforge\core\src\server\game\Entities\Player\Player.h(2052,23): error C2535: uint32 Player::GetCustomRaceTeam(uint8): функция-член уже определена или объявлена [D:\legionforge\build\src\server\game\game.vcxproj]
+  [готово] bnetserver.exe
+  D:\legionforge\core\src\server\game\Entities\Player\Player.h(2050,21): error C2535: bool Player::IsCustomRace(uint8): функция-член уже определена или объявлена [D:\legionforge\build\src\server\scripts\scripts.vcxproj]
+  D:\legionforge\core\src\server\game\Entities\Player\Player.h(2051,22): error C2535: uint8 Player::GetCustomRaceBase(uint8): функция-член уже определена или объявлена [D:\legionforge\build\src\server\scripts\scripts.vcxproj]
+  D:\legionforge\core\src\server\game\Entities\Player\Player.h(2052,23): error C2535: uint32 Player::GetCustomRaceTeam(uint8): функция-член уже определена или объявлена [D:\legionforge\build\src\server\scripts\scripts.vcxproj]
+  D:\legionforge\core\src\server\game\Entities\Player\Player.h(2050,21): error C2535: bool Player::IsCustomRace(uint8): функция-член уже определена или объявлена [D:\legionforge\build\src\server\game\game.vcxproj]
+  D:\legionforge\core\src\server\game\Entities\Player\Player.h(2051,22): error C2535: uint8 Player::GetCustomRaceBase(uint8): функция-член уже определена или объявлена [D:\legionforge\build\src\server\game\game.vcxproj]
+  D:\legionforge\core\src\server\game\Entities\Player\Player.h(2052,23): error C2535: uint32 Player::GetCustomRaceTeam(uint8): функция-член уже определена или объявлена [D:\legionforge\build\src\server\game\game.vcxproj]
+
+  [ОШИБКА] Компиляция завершилась с ошибкой. Первые ошибки:
+    D:\legionforge\core\src\server\game\Entities\Player\Player.h(2050,21): error C2535: bool Player::IsCustomRace(uint8): функция-член уже определена или объявлена [D:\legionforge\build\src\server\scripts\scripts.vcxproj]
+    D:\legionforge\core\src\server\game\Entities\Player\Player.h(2051,22): error C2535: uint8 Player::GetCustomRaceBase(uint8): функция-член уже определена или объявлена [D:\legionforge\build\src\server\scripts\scripts.vcxproj]
+    D:\legionforge\core\src\server\game\Entities\Player\Player.h(2052,23): error C2535: uint32 Player::GetCustomRaceTeam(uint8): функция-член уже определена или объявлена [D:\legionforge\build\src\server\scripts\scripts.vcxproj]
+    D:\legionforge\core\src\server\game\Entities\Player\Player.h(2050,21): error C2535: bool Player::IsCustomRace(uint8): функция-член уже определена или объявлена [D:\legionforge\build\src\server\game\game.vcxproj]
+    D:\legionforge\core\src\server\game\Entities\Player\Player.h(2051,22): error C2535: uint8 Player::GetCustomRaceBase(uint8): функция-член уже определена или объявлена [D:\legionforge\build\src\server\game\game.vcxproj]
+    D:\legionforge\core\src\server\game\Entities\Player\Player.h(2052,23): error C2535: uint32 Player::GetCustomRaceTeam(uint8): функция-член уже определена или объявлена [D:\legionforge\build\src\server\game\game.vcxproj]
+    D:\legionforge\core\src\server\game\Entities\Player\Player.h(2050,21): error C2535: bool Player::IsCustomRace(uint8): функция-член уже определена или объявлена [D:\legionforge\build\src\server\scripts\scripts.vcxproj]
+    D:\legionforge\core\src\server\game\Entities\Player\Player.h(2051,22): error C2535: uint8 Player::GetCustomRaceBase(uint8): функция-член уже определена или объявлена [D:\legionforge\build\src\server\scripts\scripts.vcxproj]
+    D:\legionforge\core\src\server\game\Entities\Player\Player.h(2052,23): error C2535: uint32 Player::GetCustomRaceTeam(uint8): функция-член уже определена или объявлена [D:\legionforge\build\src\server\scripts\scripts.vcxproj]
+    D:\legionforge\core\src\server\game\Entities\Player\Player.h(2050,21): error C2535: bool Player::IsCustomRace(uint8): функция-член уже определена или объявлена [D:\legionforge\build\src\server\game\game.vcxproj]
+    D:\legionforge\core\src\server\game\Entities\Player\Player.h(2051,22): error C2535: uint8 Player::GetCustomRaceBase(uint8): функция-член уже определена или объявлена [D:\legionforge\build\src\server\game\game.vcxproj]
+    D:\legionforge\core\src\server\game\Entities\Player\Player.h(2052,23): error C2535: uint32 Player::GetCustomRaceTeam(uint8): функция-член уже определена или объявлена [D:\legionforge\build\src\server\game\game.vcxproj]
+
+  [ОШИБКА] Сборка не удалась (код 1). Полный журнал: D:\legionforge\build_log.txt
+  Журнал сборки: D:\legionforge\build_log.txt
+
+ [ОШИБКА] Компиляция не удалась. Журнал: D:\legionforge\build_log.txt
+          Исправьте причину и запустите build_server.bat снова -
+          уже скачанные инструменты повторно не загружаются.
+
+Для продолжения нажмите любую клавишу . . .
